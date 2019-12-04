@@ -1,0 +1,31 @@
+version: "3"
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+      #    hostname: 'gitlab.test'
+      #    environment:
+      #      GITLAB_OMNIBUS_CONFIG: |
+    #        external_url 'http://gitlab.test'
+    # Add any other gitlab.rb configuration here, each on its own line
+    ports:
+      - 8081:80
+      - 444:443
+      - 22:22
+    volumes:
+      - ./config:/etc/gitlab
+      - ./logs:/var/log/gitlab
+      - ./data:/var/opt/gitlab
+    networks:
+      - gitlab_default
+
+  runner:
+    image: gitlab/gitlab-runner:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # docker-in-docker 需要
+    networks:
+      - gitlab_default
+
+networks:
+  gitlab_default:
